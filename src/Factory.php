@@ -3,7 +3,9 @@
 use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
 use Psr\Log\LoggerInterface;
-
+use Aws\Credentials\CredentialProvider;
+use Aws\Credentials\Credentials;
+use Aws\ElasticsearchService\ElasticsearchPhpHandler;
 
 class Factory
 {
@@ -50,6 +52,12 @@ class Factory
     {
 
         $clientBuilder = ClientBuilder::create();
+
+        $provider = CredentialProvider::fromCredentials(
+            new Credentials(config('elasticsearch.aws_access_key_id'), config('elasticsearch.aws_secret_access_key'))
+        );
+        $handler = new ElasticsearchPhpHandler('us-west-2', $provider);
+        $clientBuilder->setHandler($handler);
 
         // Configure hosts
 
